@@ -59,18 +59,7 @@ func parseArguments() {
 
 	flag.Parse()
 
-	switch stringState {
-	case "open":
-		state = goprlib.StateOpen
-	case "closed":
-		state = goprlib.StateClosed
-	case "merged":
-		state = goprlib.StateMerged
-	case "all":
-		state = goprlib.StateAll
-	default:
-		state = goprlib.StateOpen
-	}
+	state = goprlib.GetStateFromString(stringState)
 }
 
 func handleExit() {
@@ -82,19 +71,15 @@ func handleExit() {
 
 		os.Exit(1)
 	} else if finishedSuccessfully {
-		var stringState string
+		var output string
 
-		switch state {
-		case goprlib.StateAll:
-			stringState = "all of the"
-		case goprlib.StateClosed:
-			stringState = "all of the closed"
-		case goprlib.StateMerged:
-			stringState = "all of the merged"
-		case goprlib.StateOpen:
-			stringState = "all of the open"
+		stringState := state.ToString()
+		if len(stringState) > 0 {
+			output = fmt.Sprintf("go-pr has listed all of the %s PRs for repo \"%s\" successfully", stringState, repo)
+		} else {
+			output = fmt.Sprintf("go-pr has listed all of the PRs for repo \"%s\" successfully", repo)
 		}
 
-		goprlib.PrintError(fmt.Sprintf("go-pr has listed %s PRs for repo \"%s\" successfully", stringState, repo))
+		goprlib.PrintError(output)
 	}
 }
